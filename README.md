@@ -1,8 +1,6 @@
 # krakend-pubsub
 a pubsub backend for the KrakenD framework
 
-**NOTICE: this module is experimental and under developement. Expect sub-optimal performance and possible breaking changes**
-
 ## Backends
 
 - AWS SNS (Simple Notification Service) and SQS (Simple Queueing Service)
