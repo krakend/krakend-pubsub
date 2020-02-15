@@ -130,7 +130,7 @@ func TestNew_publisher(t *testing.T) {
 		Host: []string{"mem://host"},
 		ExtraConfig: config.ExtraConfig{
 			publisherNamespace: &publisherCfg{
-				TopicURL: "/publisher-topic-url",
+				TopicURL: "mem://publisher-topic-url",
 			},
 		},
 	})
@@ -166,7 +166,7 @@ func TestNew_publisher_unknownProvider(t *testing.T) {
 		Host: []string{"schema://host"},
 		ExtraConfig: config.ExtraConfig{
 			publisherNamespace: &publisherCfg{
-				TopicURL: "/publisher-topic-url",
+				TopicURL: "schema://publisher-topic-url",
 			},
 		},
 	})
@@ -181,7 +181,7 @@ func TestNew_publisher_unknownProvider(t *testing.T) {
 	if !strings.HasSuffix(lines[0], "DEBUG: pubsub: subscriber (schema://host): github.com/devopsfaith/krakend-pubsub/subscriber not found in the extra config") {
 		t.Error("unexpected first log line:", lines[0])
 	}
-	if !strings.HasSuffix(lines[1], `ERROR: pubsub: open pubsub.Topic: no driver registered for "schema" for URL "schema://host/publisher-topic-url"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit`) {
+	if !strings.HasSuffix(lines[1], `ERROR: pubsub: open pubsub.Topic: no driver registered for "schema" for URL "schema://publisher-topic-url"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit`) {
 		t.Error("unexpected second log line:", lines[1])
 	}
 	if lines[2] != "" {

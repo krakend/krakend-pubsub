@@ -62,7 +62,7 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 		return proxy.NoopProxy, err
 	}
 
-	t, err := pubsub.OpenTopic(ctx, dns+cfg.TopicURL)
+	t, err := pubsub.OpenTopic(ctx, cfg.TopicURL)
 	if err != nil {
 		f.logger.Error(fmt.Sprintf("pubsub: %s", err.Error()))
 		return proxy.NoopProxy, err
