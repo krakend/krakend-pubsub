@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 
+	_ "github.com/filinvadim/go-cloud-pubsub-mqtt"
 	"gocloud.dev/pubsub"
 	_ "gocloud.dev/pubsub/awssnssqs"
 	_ "gocloud.dev/pubsub/azuresb"
