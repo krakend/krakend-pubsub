@@ -22,6 +22,7 @@ import (
 )
 
 var OpenCensusViews = pubsub.OpenCensusViews
+var errNoBackendHostDefined = fmt.Errorf("no host backend defined")
 
 const (
 	publisherNamespace  = "github.com/devopsfaith/krakend-pubsub/publisher"
@@ -55,6 +56,10 @@ func (f *BackendFactory) New(remote *config.Backend) proxy.Proxy {
 }
 
 func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backend) (proxy.Proxy, error) {
+	if len(remote.Host) < 1 {
+		return proxy.NoopProxy, errNoBackendHostDefined
+	}
+
 	dns := remote.Host[0]
 	cfg := &publisherCfg{}
 	if err := getConfig(remote, publisherNamespace, cfg); err != nil {
@@ -95,6 +100,10 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 }
 
 func (f *BackendFactory) initSubscriber(ctx context.Context, remote *config.Backend) (proxy.Proxy, error) {
+	if len(remote.Host) < 1 {
+		return proxy.NoopProxy, errNoBackendHostDefined
+	}
+
 	dns := remote.Host[0]
 	cfg := &subscriberCfg{}
 	if err := getConfig(remote, subscriberNamespace, cfg); err != nil {
