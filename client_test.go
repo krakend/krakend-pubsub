@@ -34,7 +34,8 @@ func TestNew_noConfig(t *testing.T) {
 	bf := NewBackendFactory(ctx, logger, fallback)
 
 	prxy := bf.New(&config.Backend{
-		Host: []string{"schema://host"},
+		Host:        []string{"schema://host"},
+		ExtraConfig: map[string]interface{}{subscriberNamespace: "invalid"},
 	})
 
 	prxy(context.Background(), &proxy.Request{})
@@ -44,14 +45,12 @@ func TestNew_noConfig(t *testing.T) {
 	}
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "DEBUG: [pubsub: subscriber (schema://host): github.com/devopsfaith/krakend-pubsub/subscriber not found in the extra config]") {
+	if !strings.HasSuffix(lines[0], "ERROR: [[BACKEND][PubSub] Error initializing subscriber: json: cannot unmarshal string into Go value of type pubsub.subscriberCfg]") {
 		t.Error("unexpected first log line:", lines[0])
 	}
-	if !strings.HasSuffix(lines[1], "DEBUG: [pubsub: publisher (schema://host): github.com/devopsfaith/krakend-pubsub/publisher not found in the extra config]") {
-		t.Error("unexpected second log line:", lines[1])
-	}
-	if lines[2] != "" {
-		t.Error("unexpected final log line:", lines[2])
+
+	if lines[1] != "" {
+		t.Error("unexpected final log line:", lines[1])
 	}
 }
 
@@ -91,7 +90,7 @@ func TestNew_subscriber(t *testing.T) {
 		t.Error(err)
 	}
 
-	if log := buff.String(); log != "" {
+	if log := buff.String(); strings.HasSuffix(log, "DEBUG: [[BACKEND: mem://host/subscriber-topic-url][PubSub] Subscriber initialized sucessfully]") {
 		t.Errorf("unexpected log: '%s'", log)
 	}
 
@@ -138,7 +137,7 @@ func TestNew_publisher(t *testing.T) {
 	prxy(context.Background(), &proxy.Request{Body: ioutil.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "DEBUG: [pubsub: subscriber (mem://host): github.com/devopsfaith/krakend-pubsub/subscriber not found in the extra config]") {
+	if !strings.HasSuffix(lines[0], "DEBUG: [[BACKEND: mem://host/publisher-topic-url][PubSub] Publisher initialized sucessfully]") {
 		t.Error("unexpected first log line:", lines[0])
 	}
 	if lines[1] != "" {
@@ -178,13 +177,10 @@ func TestNew_publisher_unknownProvider(t *testing.T) {
 	}
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "DEBUG: [pubsub: subscriber (schema://host): github.com/devopsfaith/krakend-pubsub/subscriber not found in the extra config]") {
+	if !strings.HasSuffix(lines[0], "ERROR: [[BACKEND: schema://host/publisher-topic-url][PubSub]%!(EXTRA string=open pubsub.Topic: no driver registered for \"schema\" for URL \"schema://host/publisher-topic-url\"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit)]") {
 		t.Error("unexpected first log line:", lines[0])
 	}
-	if !strings.HasSuffix(lines[1], `ERROR: [pubsub: open pubsub.Topic: no driver registered for "schema" for URL "schema://host/publisher-topic-url"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit]`) {
-		t.Error("unexpected second log line:", lines[1])
-	}
-	if lines[2] != "" {
-		t.Error("unexpected final log line:", lines[2])
+	if lines[1] != "" {
+		t.Error("unexpected final log line:", lines[1])
 	}
 }
