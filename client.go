@@ -25,8 +25,8 @@ var OpenCensusViews = pubsub.OpenCensusViews
 var errNoBackendHostDefined = fmt.Errorf("no host backend defined")
 
 const (
-	publisherNamespace  = "backend/pubsub/publisher"
-	subscriberNamespace = "backend/pubsub/subscriber"
+	publisherNamespace  = "github.com/devopsfaith/krakend-pubsub/publisher"
+	subscriberNamespace = "github.com/devopsfaith/krakend-pubsub/subscriber"
 )
 
 func NewBackendFactory(ctx context.Context, logger logging.Logger, bf proxy.BackendFactory) *BackendFactory {
