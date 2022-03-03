@@ -16,9 +16,9 @@ import (
 	_ "gocloud.dev/pubsub/natspubsub"
 	_ "gocloud.dev/pubsub/rabbitpubsub"
 
-	"github.com/luraproject/lura/config"
-	"github.com/luraproject/lura/logging"
-	"github.com/luraproject/lura/proxy"
+	"github.com/luraproject/lura/v2/config"
+	"github.com/luraproject/lura/v2/logging"
+	"github.com/luraproject/lura/v2/proxy"
 )
 
 var OpenCensusViews = pubsub.OpenCensusViews
@@ -62,16 +62,22 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 
 	dns := remote.Host[0]
 	cfg := &publisherCfg{}
+
 	if err := getConfig(remote, publisherNamespace, cfg); err != nil {
-		f.logger.Debug(fmt.Sprintf("pubsub: publisher (%s): %s", dns, err.Error()))
+		if _, ok := err.(*NamespaceNotFoundErr); !ok {
+			f.logger.Error(fmt.Sprintf("[BACKEND][PubSub] Error initializing publisher: %s", err.Error()))
+		}
 		return proxy.NoopProxy, err
 	}
 
+	logPrefix := "[BACKEND: " + dns + cfg.TopicURL + "][PubSub]"
 	t, err := pubsub.OpenTopic(ctx, dns+cfg.TopicURL)
 	if err != nil {
-		f.logger.Error(fmt.Sprintf("pubsub: %s", err.Error()))
+		f.logger.Error(fmt.Sprintf(logPrefix, err.Error()))
 		return proxy.NoopProxy, err
 	}
+
+	f.logger.Debug(logPrefix, "Publisher initialized sucessfully")
 
 	go func() {
 		<-ctx.Done()
@@ -106,18 +112,24 @@ func (f *BackendFactory) initSubscriber(ctx context.Context, remote *config.Back
 
 	dns := remote.Host[0]
 	cfg := &subscriberCfg{}
+
 	if err := getConfig(remote, subscriberNamespace, cfg); err != nil {
-		f.logger.Debug(fmt.Sprintf("pubsub: subscriber (%s): %s", dns, err.Error()))
+		if _, ok := err.(*NamespaceNotFoundErr); !ok {
+			f.logger.Error(fmt.Sprintf("[BACKEND][PubSub] Error initializing subscriber: %s", err.Error()))
+		}
 		return proxy.NoopProxy, err
 	}
 
 	topicURL := dns + cfg.SubscriptionURL
+	logPrefix := "[BACKEND: " + topicURL + "][PubSub]"
 
 	sub, err := pubsub.OpenSubscription(ctx, topicURL)
 	if err != nil {
-		f.logger.Error(fmt.Sprintf("pubsub: opening subscription for %s: %s", topicURL, err.Error()))
+		f.logger.Error(fmt.Sprintf(logPrefix, "Error while opening subscription: %s", err.Error()))
 		return proxy.NoopProxy, err
 	}
+
+	f.logger.Debug(logPrefix, "Subscriber initialized sucessfully")
 
 	go func() {
 		<-ctx.Done()
