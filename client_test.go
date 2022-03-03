@@ -45,7 +45,7 @@ func TestNew_noConfig(t *testing.T) {
 	}
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "ERROR: [[BACKEND][PubSub] Error initializing subscriber: json: cannot unmarshal string into Go value of type pubsub.subscriberCfg]") {
+	if !strings.HasSuffix(lines[0], "ERROR: [BACKEND][PubSub] Error initializing subscriber: json: cannot unmarshal string into Go value of type pubsub.subscriberCfg") {
 		t.Error("unexpected first log line:", lines[0])
 	}
 
@@ -90,7 +90,7 @@ func TestNew_subscriber(t *testing.T) {
 		t.Error(err)
 	}
 
-	if log := buff.String(); strings.HasSuffix(log, "DEBUG: [[BACKEND: mem://host/subscriber-topic-url][PubSub] Subscriber initialized sucessfully]") {
+	if log := buff.String(); strings.HasSuffix(log, "DEBUG: [BACKEND: mem://host/subscriber-topic-url][PubSub] Subscriber initialized sucessfully") {
 		t.Errorf("unexpected log: '%s'", log)
 	}
 
@@ -137,7 +137,7 @@ func TestNew_publisher(t *testing.T) {
 	prxy(context.Background(), &proxy.Request{Body: ioutil.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "DEBUG: [[BACKEND: mem://host/publisher-topic-url][PubSub] Publisher initialized sucessfully]") {
+	if !strings.HasSuffix(lines[0], "DEBUG: [BACKEND: mem://host/publisher-topic-url][PubSub] Publisher initialized sucessfully") {
 		t.Error("unexpected first log line:", lines[0])
 	}
 	if lines[1] != "" {
@@ -177,7 +177,7 @@ func TestNew_publisher_unknownProvider(t *testing.T) {
 	}
 
 	lines := strings.Split(buff.String(), "\n")
-	if !strings.HasSuffix(lines[0], "ERROR: [[BACKEND: schema://host/publisher-topic-url][PubSub]%!(EXTRA string=open pubsub.Topic: no driver registered for \"schema\" for URL \"schema://host/publisher-topic-url\"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit)]") {
+	if !strings.HasSuffix(lines[0], "ERROR: [BACKEND: schema://host/publisher-topic-url][PubSub]%!(EXTRA string=open pubsub.Topic: no driver registered for \"schema\" for URL \"schema://host/publisher-topic-url\"; available schemes: awssns, awssqs, azuresb, gcppubsub, kafka, mem, nats, rabbit)") {
 		t.Error("unexpected first log line:", lines[0])
 	}
 	if lines[1] != "" {
