@@ -1,4 +1,4 @@
-module github.com/devopsfaith/krakend-pubsub/v2
+module github.com/krakendio/krakend-pubsub/v2
 
 go 1.17
 
