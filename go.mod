@@ -22,7 +22,7 @@ require (
 	github.com/census-instrumentation/opencensus-proto v0.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/devigned/tab v0.1.1 // indirect
-	github.com/devopsfaith/flatmap v0.0.0-20200601181759-8521186182fc // indirect
+	github.com/krakendio/flatmap v0.0.0-20200601181759-8521186182fc // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/eapache/go-resiliency v1.1.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
