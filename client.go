@@ -21,7 +21,6 @@ import (
 	"github.com/luraproject/lura/v2/proxy"
 )
 
-var OpenCensusViews = pubsub.OpenCensusViews
 var errNoBackendHostDefined = fmt.Errorf("no host backend defined")
 
 const (
