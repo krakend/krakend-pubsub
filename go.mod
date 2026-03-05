@@ -1,6 +1,6 @@
-module github.com/krakend/krakend-pubsub/v2
+module github.com/krakendio/krakend-pubsub/v2
 
-go 1.25.7
+go 1.24.0
 
 require (
 	github.com/luraproject/lura/v2 v2.0.5
