@@ -14,12 +14,12 @@ a pubsub backend for the KrakenD framework
 Just add the extra config at your backend:
 
 ```
-"github.com/devopsfaith/krakend-pubsub/subscriber": {
+"github.com/krakend/krakend-pubsub/subscriber": {
 	"subscription_url": "gcppubsub://project/topic"
 }
 ```
 ```
-"github.com/devopsfaith/krakend-pubsub/publisher": {
+"github.com/krakend/krakend-pubsub/publisher": {
 	"topic_url": "gcppubsub://project/topic"
 }
 ```
