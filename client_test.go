@@ -4,17 +4,17 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 
 	"gocloud.dev/pubsub"
 	_ "gocloud.dev/pubsub/mempubsub"
 
-	"github.com/luraproject/lura/v2/config"
-	"github.com/luraproject/lura/v2/encoding"
-	"github.com/luraproject/lura/v2/logging"
-	"github.com/luraproject/lura/v2/proxy"
+	"github.com/luraproject/lura/v3/config"
+	"github.com/luraproject/lura/v3/encoding"
+	"github.com/luraproject/lura/v3/logging"
+	"github.com/luraproject/lura/v3/proxy"
 )
 
 func TestNew_noConfig(t *testing.T) {
@@ -134,7 +134,7 @@ func TestNew_publisher(t *testing.T) {
 		},
 	})
 
-	prxy(context.Background(), &proxy.Request{Body: ioutil.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
+	prxy(context.Background(), &proxy.Request{Body: io.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
 
 	lines := strings.Split(buff.String(), "\n")
 	if !strings.HasSuffix(lines[0], "DEBUG: [BACKEND: mem://host/publisher-topic-url][PubSub] Publisher initialized sucessfully") {
@@ -170,7 +170,7 @@ func TestNew_publisher_unknownProvider(t *testing.T) {
 		},
 	})
 
-	prxy(context.Background(), &proxy.Request{Body: ioutil.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
+	prxy(context.Background(), &proxy.Request{Body: io.NopCloser(bytes.NewBufferString(`{"foo":"bar"}`))})
 
 	if !called {
 		t.Error("fallback should be called")

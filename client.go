@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"gocloud.dev/pubsub"
 	_ "gocloud.dev/pubsub/awssnssqs"
@@ -16,16 +15,16 @@ import (
 	_ "gocloud.dev/pubsub/natspubsub"
 	_ "gocloud.dev/pubsub/rabbitpubsub"
 
-	"github.com/luraproject/lura/v2/config"
-	"github.com/luraproject/lura/v2/logging"
-	"github.com/luraproject/lura/v2/proxy"
+	"github.com/luraproject/lura/v3/config"
+	"github.com/luraproject/lura/v3/logging"
+	"github.com/luraproject/lura/v3/proxy"
 )
 
 var errNoBackendHostDefined = fmt.Errorf("no host backend defined")
 
 const (
-	publisherNamespace  = "github.com/devopsfaith/krakend-pubsub/publisher"
-	subscriberNamespace = "github.com/devopsfaith/krakend-pubsub/subscriber"
+	publisherNamespace  = "backend/pubsub/publisher"
+	subscriberNamespace = "backend/pubsub/subscriber"
 )
 
 func NewBackendFactory(ctx context.Context, logger logging.Logger, bf proxy.BackendFactory) *BackendFactory {
@@ -84,7 +83,7 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 	}()
 
 	return func(ctx context.Context, r *proxy.Request) (*proxy.Response, error) {
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			return nil, err
 		}
