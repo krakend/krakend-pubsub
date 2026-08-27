@@ -61,14 +61,21 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 	dns := remote.Host[0]
 	cfg := &publisherCfg{}
 
+	logPrefix := fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub]",
+		remote.ParentEndpointMethod, remote.ParentEndpoint,
+		remote.Method, remote.URLPattern)
 	if err := getConfig(remote, publisherNamespace, cfg); err != nil {
 		if _, ok := err.(*NamespaceNotFoundErr); !ok {
-			f.logger.Error(fmt.Sprintf("[BACKEND][PubSub] Error initializing publisher: %s", err.Error()))
+			f.logger.Error(fmt.Sprintf("%s Error initializing publisher: %s",
+				logPrefix, err.Error()))
 		}
 		return proxy.NoopProxy, err
 	}
 
-	logPrefix := "[BACKEND: " + dns + cfg.TopicURL + "][PubSub]"
+	logPrefix = fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub %s %s]",
+		remote.ParentEndpointMethod, remote.ParentEndpoint,
+		remote.Method, remote.URLPattern,
+		dns, cfg.TopicURL)
 	t, err := pubsub.OpenTopic(ctx, dns+cfg.TopicURL)
 	if err != nil {
 		f.logger.Error(fmt.Sprintf(logPrefix, err.Error()))
