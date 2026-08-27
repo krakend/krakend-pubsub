@@ -72,17 +72,17 @@ func (f *BackendFactory) initPublisher(ctx context.Context, remote *config.Backe
 		return proxy.NoopProxy, err
 	}
 
-	logPrefix = fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub %s %s]",
+	topicURL := dns + cfg.TopicURL
+	logPrefix = fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub][Publisher: %s]",
 		remote.ParentEndpointMethod, remote.ParentEndpoint,
-		remote.Method, remote.URLPattern,
-		dns, cfg.TopicURL)
-	t, err := pubsub.OpenTopic(ctx, dns+cfg.TopicURL)
+		remote.Method, remote.URLPattern, topicURL)
+	t, err := pubsub.OpenTopic(ctx, topicURL)
 	if err != nil {
 		f.logger.Error(fmt.Sprintf(logPrefix, err.Error()))
 		return proxy.NoopProxy, err
 	}
 
-	f.logger.Debug(logPrefix, "Publisher initialized sucessfully")
+	f.logger.Debug(logPrefix, "Initialized sucessfully")
 
 	go func() {
 		<-ctx.Done()
@@ -118,15 +118,21 @@ func (f *BackendFactory) initSubscriber(ctx context.Context, remote *config.Back
 	dns := remote.Host[0]
 	cfg := &subscriberCfg{}
 
+	logPrefix := fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub]",
+		remote.ParentEndpointMethod, remote.ParentEndpoint,
+		remote.Method, remote.URLPattern)
 	if err := getConfig(remote, subscriberNamespace, cfg); err != nil {
 		if _, ok := err.(*NamespaceNotFoundErr); !ok {
-			f.logger.Error(fmt.Sprintf("[BACKEND][PubSub] Error initializing subscriber: %s", err.Error()))
+			f.logger.Error(fmt.Sprintf("%s Error initializing subscriber: %s",
+				logPrefix, err.Error()))
 		}
 		return proxy.NoopProxy, err
 	}
 
 	topicURL := dns + cfg.SubscriptionURL
-	logPrefix := "[BACKEND: " + topicURL + "][PubSub]"
+	logPrefix = fmt.Sprintf("[BACKEND: %s %s -> %s %s][PubSub][Subscriber: %s]",
+		remote.ParentEndpointMethod, remote.ParentEndpoint,
+		remote.Method, remote.URLPattern, topicURL)
 
 	sub, err := pubsub.OpenSubscription(ctx, topicURL)
 	if err != nil {
@@ -134,7 +140,7 @@ func (f *BackendFactory) initSubscriber(ctx context.Context, remote *config.Back
 		return proxy.NoopProxy, err
 	}
 
-	f.logger.Debug(logPrefix, "Subscriber initialized sucessfully")
+	f.logger.Debug(logPrefix, "Initialized sucessfully")
 
 	go func() {
 		<-ctx.Done()
